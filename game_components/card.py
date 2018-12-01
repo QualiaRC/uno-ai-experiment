@@ -46,7 +46,7 @@ class Card:
     # Returns True if the card's type is non-numerical.
     @property
     def special(self):
-        special_cards = [CardType.REVERSE, CardType.SKIP, CardType.DRAW_TWO, CardType.DRAW_FOUR, CardType.WILD]
+        special_cards = [CardType.REVERSE, CardType.SKIP, CardType.DRAW_TWO, CardType.DRAW_FOUR]
         return self.card_type in special_cards
 
     # Cards are considered equal if their color or type matches.

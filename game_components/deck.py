@@ -3,7 +3,7 @@ from copy import deepcopy
 from card import Card
 from card import CardColor
 from card import CardType
-from discard import DiscardPile
+from discard_pile import DiscardPile
 
 class Deck(list):
 
@@ -35,5 +35,7 @@ class Deck(list):
         self + shuffle(deepcopy(cards))
         cards = []
 
-    def draw(self):
-        return self.pop()
+    # Draw a given amount of cards from the deck.
+    # Returns a list of the cards drawn.
+    def draw(self, amt=1):
+        return [self.pop() for _ in range(amt)]
