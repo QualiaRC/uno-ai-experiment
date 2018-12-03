@@ -18,7 +18,7 @@ class Player:
     # Returns the card the player wants to play, or None if the player cannot play a card.
     # perform_move is responsible for checking whether the card returned is valid or not.
     # The card returned should be removed from the player's hand before returning.
-    def perform_move(self, card):
+    def perform_move(self, top_card):
         raise NotImplementedError
 
     # Called by Match every turn to update the player about the game.
@@ -32,7 +32,7 @@ class Player:
     #  whether it be due to the inability or choice to do so.
     # Returns True or False, depending on whether the player decides to play the given card.
     # request_draw is responsible for checking whether the card can be played or not.
-    def request_draw(self, card):
+    def request_draw(self, card, top_card):
         raise NotImplementedError
 
     # Called by Match in the case of a Draw Four card being played, 

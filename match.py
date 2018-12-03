@@ -36,7 +36,8 @@ class Match:
             CardType.SKIP: self.skip,
             CardType.REVERSE: self.reverse,
             CardType.DRAW_TWO: self.draw_two,
-            CardType.DRAW_FOUR: self.draw_four
+            CardType.DRAW_FOUR: self.draw_four,
+            CardType.WILD: self.wild
         }
 
     # Deal cards deals 7 cards to each player from the deck.
@@ -80,7 +81,7 @@ class Match:
         # If the card is None, do draw card logic
         if card is None:
             drawn_card = self.deck.draw(1)
-            if player.request_draw(drawn_card[0]):
+            if player.request_draw(drawn_card[0], self.discard_pile.top):
                 card = drawn_card[0]
             else:
                 self.notify_all_players(None, player)
@@ -98,7 +99,7 @@ class Match:
             self.players.append(player)
 
         # Check if the card is valid, and play if it is.
-        if card != self.discard_pile.top:
+        if card != self.discard_pile.top or card.card_type == CardType.WILD or card.card_type == CardType.DRAW_FOUR:
             raise ValueError("Player played card that does not match the top card!")
         self.discard_pile.add_card(card)
 
@@ -177,9 +178,13 @@ class Match:
                 self.players.append(player)
 
         else:
-            self.notify_all_players(card, player, msg=f"{drawing_player} has drawn four cards, and has been skipped.")
+            self.notify_all_players(card, player, msg=f"Player {drawing_player} has drawn four cards, and has been skipped.")
             drawing_player.notify(card, player, msg="You have drawn four cards, and have been skipped.")
             drawing_player.give_card(self.deck.draw(4))        
             self.players.append(player)
             self.players.append(drawing_player)
-        
+    
+    # Plays the card regardless of the top card.
+    def wild(self, card, player):
+        self.notify_all_players(card, player, msg=f"Player {player} has changed the color to {card.card_color}.")
+        self.players.append(player)
