@@ -28,6 +28,13 @@ class Player:
     def notify(self, card, player, msg=None):
         raise NotImplementedError
 
+    # Called by Match in the case where the player does not play a card from their hand,
+    #  whether it be due to the inability or choice to do so.
+    # Returns True or False, depending on whether the player decides to play the given card.
+    # request_draw is responsible for checking whether the card can be played or not.
+    def request_draw(self, card):
+        raise NotImplementedError
+
     # Called by Match in the case of a Draw Four card being played, 
     #  given the player who played the Draw Four card.
     # The player who has to draw four can challenge the Draw Four card,

@@ -78,8 +78,13 @@ class Match:
         
         # If the card is None, do draw card logic
         if card is None:
-            # TODO implement case where no card can be played
-            return
+            drawn_card = self.deck.draw(1)
+            if player.request_draw(drawn_card[0]):
+                card = drawn_card[0]
+            else:
+                self.notify_all_players(None, player)
+                player.add_card(drawn_card)
+                return
 
         # If the card is special, run it's specific function.
         # These functions are responsible for putting the player back on the queue.
