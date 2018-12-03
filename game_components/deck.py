@@ -1,9 +1,7 @@
 from random import shuffle
 from copy import deepcopy
-from card import Card
-from card import CardColor
-from card import CardType
-from discard_pile import DiscardPile
+from game_components.card import *
+from game_components.discard_pile import DiscardPile
 
 class Deck(list):
 
@@ -32,8 +30,9 @@ class Deck(list):
     #  and adds it back to the deck.
     # The discard pile is emptied when this is called.
     def recycle_from_pile(self, cards : DiscardPile):
-        self + shuffle(deepcopy(cards))
-        cards = []
+        top_card = cards.top
+        self + shuffle(deepcopy(cards.remove(top_card)))
+        cards = [top_card]
 
     # Draw a given amount of cards from the deck.
     # Returns a list of the cards drawn.

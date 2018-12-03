@@ -62,7 +62,7 @@ class Card:
         return color_match or type_match or wild_match
 
     def __str__(self):
-        if (self.card_color == CardType.WILD or self.card_color == CardType.DRAW_FOUR):
+        if (self.card_color == CardColor.WILD and self.card_type != CardType.DRAW_FOUR):
             return f"[ {self.card_type} ]"
         else:
             return f"[ {self.card_color} {self.card_type} ]"

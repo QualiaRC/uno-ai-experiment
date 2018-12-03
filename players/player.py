@@ -25,7 +25,7 @@ class Player:
     # Arguments include a card and the player playing the card.
     # msg, if passed, includes special information about the game,
     #  including skips, reversals, etc.
-    def notify(self, card, player, msg=None):
+    def notify(self, card, top_card, player, msg=None):
         raise NotImplementedError
 
     # Called by Match in the case where the player does not play a card from their hand,
@@ -48,6 +48,11 @@ class Player:
 
     # Called by Match when a challenge is issued, showing the cards of the challenged player.
     def challenged_hand(self, player, cards):
+        raise NotImplementedError
+
+    # Called by Match to send other information to the player.
+    # Currently only useful for players that print states.
+    def send_msg(self, msg):
         raise NotImplementedError
 
     def __str__(self):
