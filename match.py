@@ -47,7 +47,8 @@ class Match:
 
     # Calls notify on each player on the queue.
     def notify_all_players(self, card, player, msg=None):
-        pass
+        for p in self.players:
+            p.notify(card, player, msg)
     
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
