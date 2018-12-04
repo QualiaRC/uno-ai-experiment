@@ -154,7 +154,7 @@ class Match:
             # Check if the challenge is successful.
             challenge_success = False
             for card in player.hand:
-                if card == self.discard_pile.top:
+                if card == self.discard_pile.top and card.card_type != CardType.DRAW_FOUR:
                     challenge_success = True
                     break
             
