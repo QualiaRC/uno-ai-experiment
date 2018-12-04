@@ -6,3 +6,7 @@ An AI project for the Fall 2018 University of Minnesota course: CSCI 4511W: Intr
 Uno is owned by Mattel, Inc. This repo is protected under Fair Use, as it is being used for educational purposes.
 
 This code is intended for educational purposes only, and is not indended for redistribution of the game itself, nor is it a substitute for the original game.
+
+## Instructions
+Run `execute.py` in the root directory to play the game.
+You can change the list of players in `execute.py` as needed.
