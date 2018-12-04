@@ -55,7 +55,7 @@ class HumanPlayer(Player):
             # Get a number from the player.
             # If there is no play to be made, or the player does not want to play, return None.
             q = input(f"Select a card to play. (1 to {len(self.hand)}) ('skip' to not play a card):  ")
-            if [x for x in self.hand if x == top_card] == [] or q == "" or q == "skip":
+            if [x for x in self.hand if x == top_card] == [] or q == "skip":
                 return None
 
             # Attempt to convert the input into an integer.
@@ -97,7 +97,7 @@ class HumanPlayer(Player):
 
     def notify(self, card, top_card, player, msg=None):
         
-        print(f"== PLAYER {player}'s TURN - TOP CARD: {top_card} ==")
+        print(f"== PLAYER {player}'s TURN (with {player.cards_left} remaining) - TOP CARD: {top_card} ==")
         if card is None:
             print(f"  Player {player} has drawn a card, and played nothing.")
         else:
