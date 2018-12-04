@@ -21,8 +21,8 @@ class RandomPlayer(Player):
 
         # Handle WILD and DRAW FOUR cards.
         if card.card_type == CardType.WILD or card.card_type == CardType.DRAW_FOUR:
-            random_color = CardType.WILD
-            while random_color == CardType.WILD:
+            random_color = CardColor.WILD
+            while random_color == CardColor.WILD:
                 random_color = random.choice(list(CardColor))
             card.card_color = random_color
 
