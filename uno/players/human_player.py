@@ -1,6 +1,6 @@
-from players.player import Player
-from game_components.card import CardType
-from game_components.card import CardColor
+from uno.players.player import Player
+from uno.game_components.card import CardType
+from uno.game_components.card import CardColor
 
 class HumanPlayer(Player):
 

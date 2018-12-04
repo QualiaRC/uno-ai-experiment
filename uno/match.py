@@ -1,7 +1,7 @@
-from game_components.deck import Deck
-from game_components.discard_pile import DiscardPile
-from game_components.card import *
-from players.player import Player
+from uno.game_components.deck import Deck
+from uno.game_components.discard_pile import DiscardPile
+from uno.game_components.card import *
+from uno.players.player import Player
 
 from random import shuffle
 
@@ -73,7 +73,7 @@ class Match:
             # If so, notify the winner, and end the game loop.
             if current_player.cards_left == 0:
                 self.in_progress = False
-                print(f"Player {current_player} has won!\n<Press ENTER to close>)")
+                input(f"Player {current_player} has won!\n<Press ENTER to close>)")
 
     # Play the given card.
     # This will perform special moves if the given card warrants them.

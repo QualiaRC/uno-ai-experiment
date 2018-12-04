@@ -1,6 +1,6 @@
-from players.human_player import HumanPlayer
-from players.random_ai import RandomPlayer
-from match import Match
+from uno.players.human_player import HumanPlayer
+from uno.players.random_ai import RandomPlayer
+from uno.match import Match
 from collections import deque
 
 if __name__ == "__main__":

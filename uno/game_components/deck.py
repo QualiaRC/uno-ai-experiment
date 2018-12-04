@@ -1,7 +1,7 @@
 from random import shuffle
 from copy import deepcopy
-from game_components.card import *
-from game_components.discard_pile import DiscardPile
+from uno.game_components.card import *
+from uno.game_components.discard_pile import DiscardPile
 
 class Deck(list):
 
