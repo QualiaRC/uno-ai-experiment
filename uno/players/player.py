@@ -25,7 +25,7 @@ class Player:
     # Arguments include a card and the player playing the card.
     # msg, if passed, includes special information about the game,
     #  including skips, reversals, etc.
-    def notify(self, card, top_card, player, msg=None):
+    def notify(self, card, top_card, player, deck_total, msg=None):
         raise NotImplementedError
 
     # Called by Match in the case where the player does not play a card from their hand,

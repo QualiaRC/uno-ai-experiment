@@ -95,7 +95,7 @@ class HumanPlayer(Player):
         print()
         return card
 
-    def notify(self, card, top_card, player, msg=None):
+    def notify(self, card, top_card, player, deck_total, msg=None):
         
         print(f"== PLAYER {player}'s TURN (with {player.cards_left} remaining) - TOP CARD: {top_card} ==")
         if card is None:

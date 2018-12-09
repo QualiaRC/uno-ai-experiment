@@ -12,7 +12,7 @@ class RandomPlayer(Player):
     
     # Select a random card, and play it, with no strategy involved.
     def perform_move(self, top_card):
-        
+
         # Get a random valid card from the hand.
         valid_cards = [x for x in self.hand if x == top_card]
         if valid_cards == []:  # Return None if no cards can be played.
@@ -32,7 +32,7 @@ class RandomPlayer(Player):
         return card
 
     # Do nothing on other turns, since the AI is keeping track of nothing.
-    def notify(self, card, top_card, player, msg=None):
+    def notify(self, card, top_card, player, deck_total, msg=None):
         pass
     
     # Always play the card drawn if the AI can play it.

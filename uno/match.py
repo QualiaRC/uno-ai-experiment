@@ -46,7 +46,7 @@ class Match:
     # Calls notify on each player on the queue.
     def notify_all_players(self, card, top_card, player, msg=None):
         for p in self.players:
-            p.notify(card, top_card, player, msg)
+            p.notify(card, top_card, player, len(self.deck), msg)
     
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
@@ -111,7 +111,7 @@ class Match:
         skipped_player = self.players.popleft()
         self.notify_all_players(card, top_card, player, msg=f"Player {skipped_player} has been skipped.")
         player.send_msg(f"Player {skipped_player} has been skipped.")
-        skipped_player.notify(card, top_card, player, msg=f"You have been skipped.")
+        skipped_player.notify(card, top_card, player, len(self.deck), msg=f"You have been skipped.")
         self.players.append(player)
         self.players.append(skipped_player)
 
@@ -146,13 +146,15 @@ class Match:
         # Get the player drawing the cards.
         drawing_player = self.players.popleft()
 
+        # Give the current player two cards.
+        drawing_player.give_card(self.deck.draw(2))  
+
         # Tell all players about the cards drawn.
         self.notify_all_players(card, top_card, player, msg=f"{drawing_player} has drawn two cards, and has been skipped.")
         player.send_msg(f"{drawing_player} has drawn two cards, and has been skipped.")
-        drawing_player.notify(card, top_card, player, msg="You have drawn two cards, and have been skipped.")
-
-        # Give the current player two cards, and make sure the player is skipped.
-        drawing_player.give_card(self.deck.draw(2))        
+        drawing_player.notify(card, top_card, player, len(self.deck), msg="You have drawn two cards, and have been skipped.")
+      
+        # Skip the drawing player.
         self.players.append(player)
         self.players.append(drawing_player)
 
@@ -178,19 +180,19 @@ class Match:
             #  and put the drawing player back on the queue.
             if challenge_success:
                 
+                # Give the player four cards.
+                player.give_card(self.deck.draw(4))
+
                 # Tell all non-involved players about the challenge results.
                 msg = (f"Player {drawing_player}  has challenged Player {player}'s Draw Four, and succeeded!\n"
                        f"Player {player} has drawn four cards.")
                 
                 # Tell the drawing player about the challenge results.
                 self.notify_all_players(card, top_card, player, msg=msg)
-                drawing_player.notify(card, top_card, player, msg=f"Your challenge against {player} was successful!")
+                drawing_player.notify(card, top_card, player, len(self.deck), msg=f"Your challenge against {player} was successful!")
                 
                 # Tell the current player that the challenge occured and succeeded.
                 player.send_msg(f"Your DRAW FOUR was challenged by {drawing_player}, and succeded!\nYou have drawn four cards.")
-                
-                # Give the player four cards.
-                player.give_card(self.deck.draw(4))
                 
                 # Add the players back onto the queue.
                 self.players.insert(0, drawing_player)
@@ -202,28 +204,31 @@ class Match:
                 msg = (f"Player {drawing_player}  has challenged Player {player}'s Draw Four, and failed.\n"
                        f"Player {drawing_player} has drawn six cards, and has been skipped.")
                 
+                # Give the drawing player six cards.
+                drawing_player.give_card(self.deck.draw(6))  
+
                 # Tell the drawing player about the challenge results.
                 self.notify_all_players(card, top_card, player, msg=msg)
-                drawing_player.notify(card, top_card, player, msg=f"Your challenge against {player} was a failure.\nYou have drawn six cards, and have been skipped.")
+                drawing_player.notify(card, top_card, player, len(self.deck), msg=f"Your challenge against {player} was a failure.\nYou have drawn six cards, and have been skipped.")
                 
                 # Tell the current player that the challenge occured and failed.
-                player.send_msg(f"Your DRAW FOUR was challenged by {drawing_player}, but the challenge failed.\nPlayer {drawing_player} has drawn six cards, and has been skipped.")
-                
-                # Give the drawing player six cards.
-                drawing_player.give_card(self.deck.draw(6))   
+                player.send_msg(f"Your DRAW FOUR was challenged by {drawing_player}, but the challenge failed.\nPlayer {drawing_player} has drawn six cards, and has been skipped.") 
                 
                 # Add the players back onto the queue.
                 self.players.insert(0, drawing_player)
                 self.players.append(player)
 
         else:
+
+            # Give the drawing player 4 cards, and make sure they are skipped.
+            drawing_player.give_card(self.deck.draw(4))     
+
             # Tell all players about the card played.
             self.notify_all_players(card, top_card, player, msg=f"Player {drawing_player} has drawn four cards, and has been skipped.")
             player.send_msg(f"Player {drawing_player} has drawn four cards, and has been skipped.")
-            drawing_player.notify(card, top_card, player, msg="You have drawn four cards, and have been skipped.")
+            drawing_player.notify(card, top_card, player, len(self.deck), msg="You have drawn four cards, and have been skipped.")
 
-            # Give the drawing player 4 cards, and make sure they are skipped.
-            drawing_player.give_card(self.deck.draw(4))        
+            # Skip the drawing player.  
             self.players.append(player)
             self.players.append(drawing_player)
     

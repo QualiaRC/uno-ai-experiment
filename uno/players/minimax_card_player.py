@@ -11,7 +11,7 @@ class MinimaxCardPlayer(Player):
         pass
 
     # Handle the card given by adding it to relevant structures keeping track of cards played.
-    def notify(self, card, top_card, player, msg=None):
+    def notify(self, card, top_card, player, deck_total, msg=None):
         pass
     
     # Make a decision about whether to play a drawn card or not.

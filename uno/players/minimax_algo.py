@@ -1,16 +1,18 @@
 from uno.game_components.deck import Deck
 
+from collections import Counter
 from copy import copy
 
 class Node:
 
-    def __init__(self, depth, card):
+    def __init__(self, depth, card, player):
         
         # Children are represented in a tuple as (Child, weight)
         self.children = list()
-        self.value = 0
+        self.value = None
         self.depth = depth
         self.card = card
+        self.player = player
 
 
 class Minimax:
@@ -22,13 +24,18 @@ class Minimax:
     
     @property
     def possible_cards(self):
-        return [card for card in self.all_cards if not (card in self.cards_played)]
+        return Counter([card for card in self.all_cards if not (card in self.cards_played)])
 
     def apply_heuristics(self, node):
         node.value = tuple(0 for _ in range(self.number_of_players))
 
-    def generate_tree(self, parent_cards, depth=None, depth_limit=4):
+    def asdf(self):
+        pass
+
+    def generate_tree(self, parent_cards, players, depth=None):
         
+        depth_limit = self.number_of_players * 2
+
         # If no depth is passed, start generating the tree at node 0.
         if depth is None:
             depth = 0
@@ -42,14 +49,14 @@ class Minimax:
             return current_node
 
         # Get all possible cards for the following depth.
-        possible_cards = [c for c in self.possible_cards if not (c in parent_cards)]
+        playable_cards = self.possible_cards
 
         # Create children nodes for each possible card.
         new_depth = depth + 1
-        for card in possible_cards:
+        for card in playable_cards:
             new_parent_cards = copy(parent_cards) + [card] # deepcopy?
-            weights = tuple(0 for _ in range(self.number_of_players))  # TODO GENERATE WEIGHTS FOR THE CHILD
-            current_node.children += [(self.generate_tree(new_parent_cards, depth=new_depth, depth_limit=depth_limit), weights)]
+            weight = playable_cards[card]
+            current_node.children += [(self.generate_tree(new_parent_cards, depth=new_depth), weight)]
 
         # Return the working node after generating children.
         return current_node
