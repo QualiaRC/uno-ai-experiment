@@ -118,7 +118,11 @@ class Match:
     # Reverses the order of the game.
     # The message includes the new turn order of the game.
     def reverse(self, card, top_card, player):
+
+        # Reverse the players in the queue.
         self.players.reverse()
+        
+        # Create the notification string for all players.
         player_string = ""
         for p in self.players:
             player_string += p.__str__() + "\n"
@@ -127,15 +131,27 @@ class Match:
                f"Player order:\n{player_string}")
         self.notify_all_players(card, top_card, player, msg=msg)
         player.send_msg(msg)
+        
+        # Add the player back onto the deck.
+        # If there are only two players in the game, reverse cards are treated as skip cards.
+
         self.players.append(player)
+        if len(self.players) == 2:
+            self.players.append(self.players.popleft())
 
     # Gives two cards to the next player in the queue.
     # Also skips that player, as per the rules.
     def draw_two(self, card, top_card, player):
+
+        # Get the player drawing the cards.
         drawing_player = self.players.popleft()
+
+        # Tell all players about the cards drawn.
         self.notify_all_players(card, top_card, player, msg=f"{drawing_player} has drawn two cards, and has been skipped.")
         player.send_msg(f"{drawing_player} has drawn two cards, and has been skipped.")
         drawing_player.notify(card, top_card, player, msg="You have drawn two cards, and have been skipped.")
+
+        # Give the current player two cards, and make sure the player is skipped.
         drawing_player.give_card(self.deck.draw(2))        
         self.players.append(player)
         self.players.append(drawing_player)
@@ -201,9 +217,12 @@ class Match:
                 self.players.append(player)
 
         else:
+            # Tell all players about the card played.
             self.notify_all_players(card, top_card, player, msg=f"Player {drawing_player} has drawn four cards, and has been skipped.")
             player.send_msg(f"Player {drawing_player} has drawn four cards, and has been skipped.")
             drawing_player.notify(card, top_card, player, msg="You have drawn four cards, and have been skipped.")
+
+            # Give the drawing player 4 cards, and make sure they are skipped.
             drawing_player.give_card(self.deck.draw(4))        
             self.players.append(player)
             self.players.append(drawing_player)
