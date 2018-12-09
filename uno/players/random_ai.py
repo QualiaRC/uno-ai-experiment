@@ -12,7 +12,7 @@ class RandomPlayer(Player):
     
     # Select a random card, and play it, with no strategy involved.
     def perform_move(self, top_card):
-
+        
         # Get a random valid card from the hand.
         valid_cards = [x for x in self.hand if x == top_card]
         if valid_cards == []:  # Return None if no cards can be played.
@@ -26,7 +26,9 @@ class RandomPlayer(Player):
             card.card_color = random.choice(colors)
 
         # Remove the card, and return it.
-        self.hand.remove(card)
+        for i in range(len(self.hand)):
+            if card.card_type == self.hand[i].card_type and card.card_color == self.hand[i].card_color:
+                return self.hand.pop(i)
         return card
 
     # Do nothing on other turns, since the AI is keeping track of nothing.
