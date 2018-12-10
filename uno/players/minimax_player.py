@@ -1,11 +1,11 @@
 from uno.players.player import Player
-from uno.players.minimax_algo import Minimax
+from uno.players.minimax_algorithm.minimax_algo import Minimax
 from uno.game_components.card import *
 
 from copy import deepcopy
 import random
 
-class MinimaxCardPlayer(Player):
+class MinimaxPlayer(Player):
 
     def __init__(self, name, players):
         super().__init__(name)
