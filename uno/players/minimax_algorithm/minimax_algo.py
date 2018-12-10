@@ -1,5 +1,6 @@
 from uno.game_components.deck import Deck
 from uno.game_components.card import *
+from uno.players.minimax_algorithm.heuristics import Heuristics
 
 from collections import Counter
 from copy import copy
@@ -28,6 +29,7 @@ class Minimax:
         self.number_of_players = len(self.players)
         self.player_name = player_name
         self.hand = None
+        self.heuristics = Heuristics(self.player_name, self.players)
     
     # Returns a list of (card, amt) pairs, where amt is the number of times amt appears.
     @property
@@ -54,11 +56,12 @@ class Minimax:
                 card_count += [[card, 1]]
         return card_count
             
-    def get_card(self, hand, topcard, deck_total, players):
+    def get_card(self, hand, topcard, deck_total, players, previous_player):
+        
         if len(self.cards_played) == 0:
             self.cards_played += [deepcopy(topcard)]
         self.hand = hand
-        tree = self.generate_tree([topcard], deck_total, players)
+        tree = self.generate_tree([(topcard, previous_player)], deck_total, players)
         
         states = [x[0].value for x in tree.children]
         best_state = self.minimum_maximum(self.player_name, states)
@@ -68,8 +71,9 @@ class Minimax:
                 return child[0].card
         return None
 
-    def apply_heuristics(self, node):
-        node.value = [(randint(1,100) / 10) for _ in range(self.number_of_players)]
+    def apply_heuristics(self, node, parent_cards):
+        self.heuristics.update(self.hand, parent_cards)
+        node.value = self.heuristics.get_value()
 
     def minimum_maximum(self, player_name, states):
 
@@ -105,11 +109,10 @@ class Minimax:
         if depth is None:
             depth = 0
         # Create the node for the current level.
-        current_node = Node(depth, parent_cards[len(parent_cards)-1], players[0])
-
+        current_node = Node(depth, parent_cards[len(parent_cards)-1][0], players[0])
         # If we have hit depth limit or we encounter the AI player again, return the node.
         if depth == depth_limit or (current_node.player_name == self.player_name and depth != 0):
-            self.apply_heuristics(current_node)
+            self.apply_heuristics(current_node, parent_cards)
             return current_node
 
         # Get all possible cards for the following depth.
@@ -151,7 +154,7 @@ class Minimax:
                 new_list.append(new_list.pop(0))
 
             # Get the weight of the branch being created.
-            new_parent_cards = copy(parent_cards) + [card[0]] # deepcopy?
+            new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name)]) # deepcopy?
             
             # Remove the card from the hand if it is the player's turn
             if current_node.player_name == self.player_name:
