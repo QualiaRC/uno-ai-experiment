@@ -57,3 +57,6 @@ class RandomPlayer(Player):
     # Don't actually care about sent messages, do nothing.
     def send_msg(self, msg):
         pass
+
+    def send_player_order(self, player_list):
+        pass

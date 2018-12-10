@@ -55,5 +55,9 @@ class Player:
     def send_msg(self, msg):
         raise NotImplementedError
 
+    # Called by Match to send the current order of players.
+    def send_player_order(self, player_list):
+        raise NotImplementedError
+
     def __str__(self):
         return self.name

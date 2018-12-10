@@ -37,6 +37,11 @@ class Match:
         # Start the game loop.
         self.game_loop()
 
+    # Get the current order of players by name.
+    @property
+    def player_list(self):
+        return [x.name for x in self.players]
+
     # Deal cards deals 7 cards to each player from the deck.
     def deal_cards(self):
         for _ in range(7):
@@ -47,12 +52,20 @@ class Match:
     def notify_all_players(self, card, top_card, player, msg=None):
         for p in self.players:
             p.notify(card, top_card, player, len(self.deck), msg)
+
+    # Sends all players on the queue the current order of players.
+    def send_all_player_lists(self):
+        for p in self.players:
+            p.send_player_order(self.player_list)
     
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
     def game_loop(self):
 
         print("\n\n=== GAME START ===\n")
+
+        # Tell everyone about the initial order of players.
+        self.send_all_player_lists()
 
         player_string = [(f"  {x}") for x in self.players]
         print(f"Player order:")
@@ -68,6 +81,7 @@ class Match:
 
             # Handle the card played by the player.
             self.handle_card(played_card, current_player)
+            self.send_all_player_lists()
 
             # Check if the current player has won.
             # If so, notify the winner, and end the game loop.

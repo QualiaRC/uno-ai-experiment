@@ -138,3 +138,6 @@ class HumanPlayer(Player):
     def send_msg(self, msg):
         print(msg)
         print()
+
+    def send_player_order(self, player_list):
+        pass

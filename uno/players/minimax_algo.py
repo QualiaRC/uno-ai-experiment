@@ -13,7 +13,7 @@ class Node:
         
         # Children are represented in a tuple as (Child, weight)
         self.children = list()
-        self.value = None
+        self.value = []
         self.depth = depth
         self.card = card
         self.player_name = player_name
@@ -29,20 +29,43 @@ class Minimax:
         self.player_name = player_name
         self.hand = None
     
+    # Returns a list of (card, amt) pairs, where amt is the number of times amt appears.
     @property
     def possible_cards(self):
-        return Counter([card for card in self.all_cards if not (card in self.cards_played)])
+        cards_available = []
+        for card1 in self.all_cards:
+            found = False
+            for card2 in self.cards_played:
+                if card1.card_color == card2.card_color and card1.card_type == card2.card_type:
+                    found = True
+                    break
+            if not found:
+                cards_available.append(card1)
 
+        card_count = []
+        for card in cards_available:
+            new_card = True
+            for card_tuple in card_count:
+                if card_tuple[0].card_color == card.card_color and card_tuple[0].card_type == card.card_type:
+                    card_tuple[1] += 1
+                    new_card = False
+                    break
+            if new_card:
+                card_count += [[card, 1]]
+        return card_count
+            
     def get_card(self, hand, topcard, deck_total, players):
         self.hand = hand
         tree = self.generate_tree([topcard], deck_total, players)
+
         for child in tree.children:
-            if child.value == tree.value:
-                return child.card
+            #print(f"Comparing {child[0].value} and {tree.value}")
+            if child[0].value == tree.value:
+                return child[0].card
         return None
 
     def apply_heuristics(self, node):
-        node.value = tuple(randint(0,5) for _ in range(self.number_of_players))
+        node.value = [(randint(1,100) / 10) for _ in range(self.number_of_players)]
 
     def minimum_maximum(self, player_name, states):
 
@@ -72,31 +95,42 @@ class Minimax:
         return states[choice(minmaxes)]
 
     def generate_tree(self, parent_cards, deck_total, players, depth=None):
-        
-        depth_limit = self.number_of_players * 2
+        depth_limit = self.number_of_players * 3
 
         # If no depth is passed, start generating the tree at node 0.
         if depth is None:
             depth = 0
-
         # Create the node for the current level.
-        current_node = Node(depth, players[0], parent_cards[len(parent_cards)-1])
+        current_node = Node(depth, parent_cards[len(parent_cards)-1], players[0])
 
         # If we have hit depth limit or we encounter the AI player again, return the node.
-        if depth >= depth_limit or (current_node.player_name == self.player_name and depth != 0):
+        if depth == depth_limit or (current_node.player_name == self.player_name and depth != 0):
             self.apply_heuristics(current_node)
             return current_node
+            
 
         # Get all possible cards for the following depth.
-        if depth == 0:
-            playable_cards = self.hand
+        if current_node.player_name == self.player_name:
+            playable_cards = []
+            for card in self.hand:
+                new_card = True
+                for card_pair in playable_cards:
+                    if card_pair[0].card_color == card.card_color and card_pair[0].card_type == card.card_type:
+                        card_pair[1] += 1
+                        new_card = False
+                        break
+                if new_card:
+                    playable_cards += [[card, 1]]
         else:
             playable_cards = self.possible_cards
 
-        playable_cards = [x for x in playable_cards if x == current_node.card]
+        playable_cards = [x for x in playable_cards if x[0] == current_node.card]
 
         # Create children nodes for each possible card.
         new_depth = depth + 1
+        #print(f"depth: {depth}")
+        #[print(f"playable {x[0]}") for x in playable_cards]
+        #print()
         for card in playable_cards:
             # TODO: CHECK IF THE DECK IS SHUFFLED AFTER THE CARD IS PLAYED, ONCE BEFORE AND AFTER THE DRAW CONDITIONAL
             # Create a new list of players, with the order reflecting the next turn based off of the card being played.
@@ -105,23 +139,32 @@ class Minimax:
             new_deck_total = deck_total
             
             new_list = copy(players)
-            if card.card_type == CardType.SKIP or card.card_type == CardType.DRAW_TWO or card.card_type == CardType.DRAW_FOUR:
+            if card[0].card_type == CardType.SKIP or card[0].card_type == CardType.DRAW_TWO or card[0].card_type == CardType.DRAW_FOUR:
                 new_list.append(new_list.pop(0))
                 new_list.append(new_list.pop(0))
-            elif card.card_type == CardType.REVERSE:
+            elif card[0].card_type == CardType.REVERSE:
                 new_list.reverse()
             else:
                 new_list.append(new_list.pop(0))
 
             # Get the weight of the branch being created.
-            new_parent_cards = copy(parent_cards) + [card] # deepcopy?
-            weight = playable_cards[card]
-
+            new_parent_cards = copy(parent_cards) + [card[0]] # deepcopy?
+            
+            # Remove the card from the hand if it is the player's turn
+            if current_node.player_name == self.player_name:
+                for i in range(len(self.hand)):
+                    if self.hand[i].card_color == card[0].card_color and self.hand[i].card_type == card[0].card_type:
+                        self.hand.pop(i)
+                        break
+            weight = card[1]
             current_node.children += [(self.generate_tree(new_parent_cards, new_deck_total, new_list, depth=new_depth), weight)]
 
         # Return the working node after generating children.
         states = []
         for child in current_node.children:
-            states += [ [x*child[1]] for x in child[0].value ]
+            #print(f"{child[0].value} ASDF")
+            val = [(x * child[1]) for x in child[0].value]
+            states += [val]
+        #print(f"{states}")
         current_node.value = self.minimum_maximum(current_node.player_name, states)
         return current_node
