@@ -59,10 +59,12 @@ class Minimax:
             self.cards_played += [deepcopy(topcard)]
         self.hand = hand
         tree = self.generate_tree([topcard], deck_total, players)
+        
+        states = [x[0].value for x in tree.children]
+        best_state = self.minimum_maximum(self.player_name, states)
 
         for child in tree.children:
-            #print(f"Comparing {child[0].value} and {tree.value}")
-            if child[0].value == tree.value:
+            if child[0].value == best_state:
                 return child[0].card
         return None
 

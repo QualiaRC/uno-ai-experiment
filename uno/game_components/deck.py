@@ -41,6 +41,7 @@ class Deck(list):
         while len(cards) > 0:
             self.append(cards.pop())
         cards.append(top_card)
+        #print(f"Cards after reshuffling: {len(self)}")
 
     # Draw a given amount of cards from the deck.
     # Returns a list of the cards drawn.

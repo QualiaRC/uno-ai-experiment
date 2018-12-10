@@ -36,7 +36,7 @@ class Match:
         self.in_progress = True
 
         # Start the game loop.
-        self.game_loop()
+        self.winner = self.game_loop()
 
     # Get the current order of players by name.
     @property
@@ -64,8 +64,6 @@ class Match:
     def reshuffle_cards(self, cards=1):
         if cards >= len(self.deck):
             self.deck.recycle_from_pile(self.discard_pile)
-            print(len(self.discard_pile))
-
 
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
@@ -101,6 +99,7 @@ class Match:
                     input(f"Player {current_player} has won!\n<Press ENTER to close>)")
                 else:
                     print(f"Player {current_player} has won!")
+                return current_player
 
     # Play the given card.
     # This will perform special moves if the given card warrants them.

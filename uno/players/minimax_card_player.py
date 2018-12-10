@@ -19,7 +19,7 @@ class MinimaxCardPlayer(Player):
         #print("MINMAX PLAYER HAND")
         #[print(x) for x in self.hand]
         #print()
-        chosen_card =  self.algo.get_card(deepcopy(self.hand), top_card, self.current_deck_total, self.current_player_order)
+        chosen_card =  self.algo.get_card(deepcopy(self.hand), deepcopy(top_card), self.current_deck_total, self.current_player_order)
         if chosen_card is None:
             return None
         for i in range(len(self.hand)):
