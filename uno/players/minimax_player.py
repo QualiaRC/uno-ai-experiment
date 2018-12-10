@@ -24,10 +24,13 @@ class MinimaxPlayer(Player):
         if chosen_card is None:
             return None
         for i in range(len(self.hand)):
-            if self.hand[i].card_type == chosen_card.card_type and self.hand[i].card_color == chosen_card.card_color:
+            if ((chosen_card.card_type == CardType.WILD and self.hand[i].card_type == CardType.WILD)
+                or (chosen_card.card_type == CardType.DRAW_FOUR and self.hand[i].card_type == CardType.DRAW_FOUR)):
+                self.hand[i].card_color = chosen_card.card_color
                 selected_card = self.hand.pop(i)
-                if selected_card.card_type == CardType.WILD or selected_card.card_type == CardType.DRAW_FOUR:
-                    self.select_wild_color(selected_card)
+                return selected_card
+            elif self.hand[i].card_type == chosen_card.card_type and self.hand[i].card_color == chosen_card.card_color:
+                selected_card = self.hand.pop(i)
                 return selected_card
     # Handle the card given by adding it to relevant structures keeping track of cards played.
     def notify(self, card, top_card, player, deck_total, msg=None):

@@ -8,7 +8,12 @@ class Heuristics:
         self.player_count = len(self.players)
         self.hand = None
         self.card_history = None
-        self.functions = [self.l_drawtwo, self.l_skip, self.l_hasdiscarded]
+        self.functions = [ 
+            self.l_drawtwo, 
+            self.l_skip, 
+            self.l_hasdiscarded,
+            self.l_wrongwild
+        ]
 
     def update(self, hand, card_history):
         self.hand = hand
@@ -44,3 +49,25 @@ class Heuristics:
             if not card[1] is None:
                 ret[self.players.index(card[1])] += 5
         return ret
+
+    def l_wrongwild(self, card_history):
+        ret = [0 for _ in range(self.player_count)]
+        for card in card_history:
+            if card[1] == self.player_name and (card[0].card_type == CardType.WILD or card[0].card_type == CardType.DRAW_FOUR):
+                cc = self.color_count(self.hand)
+                optimal_color = max(cc, key=cc.get)
+                if card[0].card_color != optimal_color:
+                    ret[self.players.index(card[1])] -= 1
+        return ret
+
+    def color_count(self, hand):
+        color_count = {
+            CardColor.BLUE: 0,
+            CardColor.RED: 0,
+            CardColor.GREEN: 0,
+            CardColor.YELLOW: 0
+        }
+        for card in hand:
+            if not card.card_color == CardColor.WILD:
+                color_count[card.card_color] += 1
+        return color_count

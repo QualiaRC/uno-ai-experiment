@@ -131,6 +131,25 @@ class Minimax:
             playable_cards = self.possible_cards
 
         playable_cards = [x for x in playable_cards if x[0] == current_node.card]
+        new_wilds = []
+        counter_wild = 0
+        counter_draw4 = 0
+        for card in playable_cards:
+            if card[0].card_type == CardType.WILD:
+                counter_wild += 1
+            if card[0].card_type == CardType.DRAW_FOUR:
+                counter_draw4 += 1
+                
+        colors = [x for x in list(CardColor) if x != CardColor.WILD]
+
+        for color in colors:
+            if counter_wild != 0:
+                new_wilds.append([Card(color, CardType.WILD), counter_wild])
+            elif counter_draw4 != 0:
+                new_wilds.append([Card(color, CardType.DRAW_FOUR), counter_draw4]) 
+
+        playable_cards = [x for x in playable_cards if x[0].card_color != CardColor.WILD]
+        playable_cards += new_wilds
 
         # Create children nodes for each possible card.
         new_depth = depth + 1
