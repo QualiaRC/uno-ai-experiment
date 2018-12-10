@@ -7,10 +7,11 @@ from random import shuffle
 
 class Match:
 
-    def __init__(self, players):
+    def __init__(self, players, verbose=True):
         
         self.deck = Deck()
         self.discard_pile = DiscardPile()
+        self.verbose = verbose
         
         # Dictionary of methods to speed up processing.
         self.special_methods = {
@@ -57,21 +58,29 @@ class Match:
     def send_all_player_lists(self):
         for p in self.players:
             p.send_player_order(self.player_list)
-    
+
+    # Checks if the deck needs reshuffling given the number of cards about to be drawn,
+    #  and do so.
+    def reshuffle_cards(self, cards=1):
+        if cards >= len(self.deck):
+            self.deck.recycle_from_pile(self.discard_pile)
+        print(len(self.deck))
+
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
     def game_loop(self):
 
-        print("\n\n=== GAME START ===\n")
-
         # Tell everyone about the initial order of players.
         self.send_all_player_lists()
 
-        player_string = [(f"  {x}") for x in self.players]
-        print(f"Player order:")
-        for p in player_string:
-            print(p)
-        print("\n")
+        if self.verbose:
+            print("\n\n=== GAME START ===\n")
+
+            player_string = [(f"  {x}") for x in self.players]
+            print(f"Player order:")
+            for p in player_string:
+                print(p)
+            print("\n")
 
         while self.in_progress:
 
@@ -87,7 +96,10 @@ class Match:
             # If so, notify the winner, and end the game loop.
             if current_player.cards_left == 0:
                 self.in_progress = False
-                input(f"Player {current_player} has won!\n<Press ENTER to close>)")
+                if self.verbose:
+                    input(f"Player {current_player} has won!\n<Press ENTER to close>)")
+                else:
+                    print(f"Player {current_player} has won!")
 
     # Play the given card.
     # This will perform special moves if the given card warrants them.
@@ -96,6 +108,7 @@ class Match:
         
         # If the card is None, do draw card logic
         if card is None:
+            self.reshuffle_cards()
             drawn_card = self.deck.draw(1)
             if player.request_draw(drawn_card[0], self.discard_pile.top):
                 card = drawn_card[0]
@@ -161,6 +174,7 @@ class Match:
         drawing_player = self.players.popleft()
 
         # Give the current player two cards.
+        self.reshuffle_cards(cards=2)
         drawing_player.give_card(self.deck.draw(2))  
 
         # Tell all players about the cards drawn.
@@ -195,6 +209,7 @@ class Match:
             if challenge_success:
                 
                 # Give the player four cards.
+                self.reshuffle_cards(cards=4)
                 player.give_card(self.deck.draw(4))
 
                 # Tell all non-involved players about the challenge results.
@@ -219,6 +234,7 @@ class Match:
                        f"Player {drawing_player} has drawn six cards, and has been skipped.")
                 
                 # Give the drawing player six cards.
+                self.reshuffle_cards(cards=6)
                 drawing_player.give_card(self.deck.draw(6))  
 
                 # Tell the drawing player about the challenge results.
@@ -235,6 +251,7 @@ class Match:
         else:
 
             # Give the drawing player 4 cards, and make sure they are skipped.
+            self.reshuffle_cards(cards=4)
             drawing_player.give_card(self.deck.draw(4))     
 
             # Tell all players about the card played.

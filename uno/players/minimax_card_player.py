@@ -16,9 +16,9 @@ class MinimaxCardPlayer(Player):
     
     # Select a card by generating a decision tree, and selecting a card based on heuristic functions etc.
     def perform_move(self, top_card):
-        print("MINMAX PLAYER HAND")
-        [print(x) for x in self.hand]
-        print()
+        #print("MINMAX PLAYER HAND")
+        #[print(x) for x in self.hand]
+        #print()
         chosen_card =  self.algo.get_card(deepcopy(self.hand), top_card, self.current_deck_total, self.current_player_order)
         if chosen_card is None:
             return None
@@ -29,7 +29,7 @@ class MinimaxCardPlayer(Player):
     # Handle the card given by adding it to relevant structures keeping track of cards played.
     def notify(self, card, top_card, player, deck_total, msg=None):
         if card:
-            self.algo.cards_played += [card]
+            self.algo.cards_played += [deepcopy(card)]
         self.current_deck_total = deck_total
     
     # Make a decision about whether to play a drawn card or not.

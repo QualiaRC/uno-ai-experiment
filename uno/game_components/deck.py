@@ -38,7 +38,8 @@ class Deck(list):
             if card.card_type == CardType.DRAW_FOUR or card.card_type == CardType.WILD:
                 card.card_color = CardColor.WILD
         # Shuffle the cards, and place them back in the deck.
-        self + shuffle(cards)
+        shuffle(cards)
+        [self.append(x) for x in cards]
         cards = [top_card]
 
     # Draw a given amount of cards from the deck.

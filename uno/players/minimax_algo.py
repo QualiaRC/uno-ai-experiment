@@ -55,6 +55,8 @@ class Minimax:
         return card_count
             
     def get_card(self, hand, topcard, deck_total, players):
+        if len(self.cards_played) == 0:
+            self.cards_played += [deepcopy(topcard)]
         self.hand = hand
         tree = self.generate_tree([topcard], deck_total, players)
 
@@ -95,7 +97,7 @@ class Minimax:
         return states[choice(minmaxes)]
 
     def generate_tree(self, parent_cards, deck_total, players, depth=None):
-        depth_limit = self.number_of_players * 3
+        depth_limit = self.number_of_players
 
         # If no depth is passed, start generating the tree at node 0.
         if depth is None:
@@ -107,7 +109,6 @@ class Minimax:
         if depth == depth_limit or (current_node.player_name == self.player_name and depth != 0):
             self.apply_heuristics(current_node)
             return current_node
-            
 
         # Get all possible cards for the following depth.
         if current_node.player_name == self.player_name:
