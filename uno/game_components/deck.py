@@ -31,16 +31,16 @@ class Deck(list):
     # The discard pile is emptied when this is called.
     def recycle_from_pile(self, cards : DiscardPile):
         # Get the top card of the pile out
-        top_card = cards.top
-        cards.remove(top_card)
+        top_card = cards.pop()
         # Change all WILD cards in the deck to be colored.
         for card in cards:
             if card.card_type == CardType.DRAW_FOUR or card.card_type == CardType.WILD:
                 card.card_color = CardColor.WILD
         # Shuffle the cards, and place them back in the deck.
         shuffle(cards)
-        [self.append(x) for x in cards]
-        cards = [top_card]
+        while len(cards) > 0:
+            self.append(cards.pop())
+        cards.append(top_card)
 
     # Draw a given amount of cards from the deck.
     # Returns a list of the cards drawn.

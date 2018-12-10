@@ -64,6 +64,8 @@ class Match:
     def reshuffle_cards(self, cards=1):
         if cards >= len(self.deck):
             self.deck.recycle_from_pile(self.discard_pile)
+            print(len(self.discard_pile))
+
 
     # The main loop of the game.
     # This loop continues until a player wins, or until an error occurs.
