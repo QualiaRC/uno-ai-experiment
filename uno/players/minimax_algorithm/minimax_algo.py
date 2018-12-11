@@ -30,7 +30,9 @@ class Minimax:
         self.player_name = player_name
         self.hand = None
         self.heuristics = Heuristics(self.player_name, self.players)
-        self.mystery_hands = [[None for _ in range(7)] for _ in players]
+        self.mystery_hands = dict()
+        for player in players:
+            self.mystery_hands[player] = [None for _ in range(7)]
 
     # Returns a list of (card, amt) pairs, where amt is the number of times amt appears.
     @property
@@ -60,8 +62,8 @@ class Minimax:
         if len(self.cards_played) == 0:
             self.cards_played += [deepcopy(topcard)]
         self.hand = hand
-        self.mystery_hands[self.players.index(self.player_name)] = deepcopy(self.hand)
         tree = self.generate_tree([(topcard, previous_player)], deck_total, players, self.mystery_hands)
+
 
         states = [x[0].value for x in tree.children]
         best_state = self.minimum_maximum(self.player_name, states)
@@ -118,7 +120,7 @@ class Minimax:
         # Get all possible cards for the following depth.
         if current_node.player_name == self.player_name:
             playable_cards = []
-            for card in mystery_hands[self.players.index(self.player_name)]:
+            for card in self.hand:
                 new_card = True
                 for card_pair in playable_cards:
                     if card_pair[0] == card:
@@ -161,7 +163,6 @@ class Minimax:
             # Create a new list of players, with the order reflecting the next turn based off of the card being played.
 
             mystery_hands_copy = deepcopy(mystery_hands)
-            #mystery_hands_copy = mystery_hands.copy()
 
             # TODO: UPDATE THE DECK_TOTAL
             new_deck_total = deck_total
@@ -172,11 +173,11 @@ class Minimax:
                 new_list.append(new_list.pop(0))
             elif card[0].card_type == CardType.DRAW_TWO:
                 new_list.append(new_list.pop(0))
-                mystery_hands_copy[self.players.index(new_list[0])] += [None for _ in range(2)]
+                mystery_hands_copy[new_list[0]] += [None for _ in range(2)]
                 new_list.append(new_list.pop(0))
             elif card[0].card_type == CardType.DRAW_FOUR:
                 new_list.append(new_list.pop(0))
-                mystery_hands_copy[self.players.index(new_list[0])] += [None for _ in range(4)]
+                mystery_hands_copy[new_list[0]] += [None for _ in range(4)]
                 new_list.append(new_list.pop(0))
             elif card[0].card_type == CardType.REVERSE:
                 new_list.reverse()
@@ -186,13 +187,27 @@ class Minimax:
             # If we know the player has a card in their hand that matches 
             #  this node, we remove it from that list. If we don't know if 
             #  it's in their hand, remove a 'mystery' card
-            print(f"{card[0]} versus: (Current player: {current_node.player_name}, current depth: {depth}")
-            [print(f"  {x}") for x in mystery_hands_copy[self.players.index(current_node.player_name)]]
-            print(f"{len(mystery_hands_copy[self.players.index(current_node.player_name)])}")
-            if card[0] in mystery_hands_copy[self.players.index(current_node.player_name)]:
-                mystery_hands_copy[self.players.index(current_node.player_name)].remove(card[0])
-            else:
-                mystery_hands_copy[self.players.index(current_node.player_name)].remove(None)    
+            removed = False
+            #print("===DEPTH " + str(current_node.depth) + "===")
+            #print("<BEE-4> MYSTERY HAND FROM PLAYER: " + current_node.player_name)
+            #print(f'{mystery_hands_copy[current_node.player_name]}')
+
+            for i in range(len(mystery_hands_copy[current_node.player_name])):
+                if (not mystery_hands_copy[current_node.player_name][i] is None and 
+                current_node.card.same(mystery_hands_copy[current_node.player_name][i])):
+                    mystery_hands_copy[current_node.player_name].pop(i)
+                    removed = True
+                    break
+            if not removed:
+                for i in range(len(mystery_hands_copy[current_node.player_name])):
+                    if mystery_hands_copy[current_node.player_name][i] is None:
+                        mystery_hands_copy[current_node.player_name].pop(i)
+                        break
+                    
+            #print("<AFTER> MYSTERY HAND FROM PLAYER: " + current_node.player_name)
+            #print(f'{mystery_hands_copy[current_node.player_name]}')
+            #print()
+            #print()            
 
             # Get the weight of the branch being created.
             new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name, mystery_hands_copy)]) # deepcopy?

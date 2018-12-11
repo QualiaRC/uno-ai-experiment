@@ -38,10 +38,10 @@ class MinimaxPlayer(Player):
         if card:
             self.algo.cards_played += [deepcopy(card)]
             self.previous_player = player.name
-            if card in self.algo.mystery_hands[self.algo.players.index(player.name)]:
-                self.algo.mystery_hands[self.algo.players.index(player.name)].remove(card)
-            elif None in self.algo.mystery_hands[self.algo.players.index(player.name)]:
-                self.algo.mystery_hands[self.algo.players.index(player.name)].remove(None)
+            if card in self.algo.mystery_hands[player.name]:
+                self.algo.mystery_hands[player.name].remove(card)
+            elif None in self.algo.mystery_hands[player.name]:
+                self.algo.mystery_hands[player.name].remove(None)
         self.current_deck_total = deck_total
     
     # Make a decision about whether to play a drawn card or not.
@@ -60,7 +60,7 @@ class MinimaxPlayer(Player):
 
     # Handle the cards given by adding it to relevant structures keeping track of cards.
     def challenged_hand(self, player, cards):
-        self.algo.mystery_hands[self.algo.players.index(player.name)] = deepcopy(cards)
+        self.algo.mystery_hands[player.name] = cards
 
     # Don't actually care about sent messages, do nothing.
     def send_msg(self, msg):
