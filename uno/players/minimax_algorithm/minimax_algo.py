@@ -60,9 +60,16 @@ class Minimax:
             
     def get_card(self, hand, topcard, deck_total, players, previous_player):
         
+        # Handle case where AI goes first in a match.
         if len(self.cards_played) == 0:
             self.cards_played += [deepcopy(topcard)]
+        
+        # Add information to heuristics object.
         self.hand = hand
+        self.heuristics.hand = deepcopy(self.hand)
+        self.heuristics.mystery_hands = deepcopy(self.mystery_hands)
+        self.heuristics.cards_played = deepcopy(self.cards_played)
+
         tree = self.generate_tree([(topcard, previous_player)], deck_total, players)
 
         states = [x[0].value for x in tree.children]

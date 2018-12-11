@@ -7,6 +7,8 @@ class Heuristics:
         self.players = players
         self.player_count = len(self.players)
         self.hand = None
+        self.cards_played = None
+        self.mystery_hands = None
         self.card_history = None
         self.functions = [ 
             self.l_drawtwo, 
