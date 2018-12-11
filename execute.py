@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     
     t = time()
-    round_count = 100
+    round_count = 1
     for i in range(round_count):
         #player_list = [RandomPlayer("RANDOM1"), RandomPlayer("RANDOM2"), MinimaxPlayer("MINIMAX", ["RANDOM1", "RANDOM2", "MINIMAX"])]
         player_list = [RandomPlayer("RANDOM"), MinimaxPlayer("MINIMAX", ["RANDOM", "MINIMAX"])]
@@ -33,6 +33,6 @@ if __name__ == "__main__":
     print(f"Time taken: {round(time() - t, 3)} seconds")
 
     
-#    for _ in range(1000):
+#    for _ in range(1000):  
 #        player_list = [ MinimaxPlayer("MINIMAX1", ["MINIMAX1", "MINIMAX2"]), MinimaxPlayer("MINIMAX2", ["MINIMAX1", "MINIMAX2"])]
 #        Match(deque(player_list), verbose=False)
