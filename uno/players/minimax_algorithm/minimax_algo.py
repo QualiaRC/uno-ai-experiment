@@ -59,11 +59,11 @@ class Minimax:
         return card_count
             
     def get_card(self, hand, topcard, deck_total, players, previous_player):
+        
         if len(self.cards_played) == 0:
             self.cards_played += [deepcopy(topcard)]
         self.hand = hand
         tree = self.generate_tree([(topcard, previous_player)], deck_total, players)
-
 
         states = [x[0].value for x in tree.children]
         best_state = self.minimum_maximum(self.player_name, states)
@@ -158,22 +158,34 @@ class Minimax:
         #print(f"{current_node.player_name} depth: {depth}")
         #[print(f"playable {x[0]}") for x in playable_cards]
         #print()
+        new_deck_total = deck_total
         for card in playable_cards:
-            # TODO: CHECK IF THE DECK IS SHUFFLED AFTER THE CARD IS PLAYED, ONCE BEFORE AND AFTER THE DRAW CONDITIONAL
-            # Create a new list of players, with the order reflecting the next turn based off of the card being played.
-
-            # TODO: UPDATE THE DECK_TOTAL
-            new_deck_total = deck_total
             
             new_list = copy(players)
-            if card[0].card_type == CardType.SKIP or card[0].card_type == CardType.DRAW_TWO or card[0].card_type == CardType.DRAW_FOUR:
+            if card[0].card_type == CardType.SKIP:
                 new_list.append(new_list.pop(0))
+                new_list.append(new_list.pop(0))
+            elif card[0].card_type == CardType.DRAW_TWO:
+                new_list.append(new_list.pop(0))
+                self.mystery_hands[new_list[0]] += [None for _ in range(2)]
+                new_deck_total -= 2     
+            elif card[0].card_type == CardType.DRAW_FOUR:
+                new_list.append(new_list.pop(0))
+                self.mystery_hands[new_list[0]] += [None for _ in range(4)]
+                new_deck_total -= 4    
                 new_list.append(new_list.pop(0))
             elif card[0].card_type == CardType.REVERSE:
                 new_list.reverse()
             else:
                 new_list.append(new_list.pop(0))
 
+            # Deck has been depleted, calculate the new depth total.
+            if new_deck_total < 0:
+                cards_in_play = 0
+                for player in self.mystery_hands:
+                    cards_in_play += len(self.mystery_hands[player])
+                # all cards - cards in each players hand - top card of discard
+                new_deck_total = 108 - cards_in_play - 1
 
             # Get the weight of the branch being created.
             new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name)]) # deepcopy?
@@ -186,7 +198,7 @@ class Minimax:
                         break
             weight = card[1]
 
-            current_node.children += [(self.generate_tree(new_parent_cards, new_deck_total, new_list,depth=new_depth), weight)]
+            current_node.children += [(self.generate_tree(new_parent_cards, new_deck_total, new_list, depth=new_depth), weight)]
 
         # Return the working node after generating children.
         states = []

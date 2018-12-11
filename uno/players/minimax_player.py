@@ -60,7 +60,7 @@ class MinimaxPlayer(Player):
 
     # Handle the cards given by adding it to relevant structures keeping track of cards.
     def challenged_hand(self, player, cards):
-        self.algo.mystery_hands[player.name] = cards
+        self.algo.mystery_hands[player.name] = deepcopy(cards)
 
     # Don't actually care about sent messages, do nothing.
     def send_msg(self, msg):
