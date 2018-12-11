@@ -12,9 +12,11 @@ class Heuristics:
             self.l_drawtwo, 
             self.l_skip, 
             self.l_hasdiscarded,
-            self.l_wrongwild
+            self.l_wrongwild,
+            self.l_wrongdrawfour
         ]
 
+    #Card history is list [asdfa]
     def update(self, hand, card_history):
         self.hand = hand
         self.card_history = card_history
@@ -53,11 +55,25 @@ class Heuristics:
     def l_wrongwild(self, card_history):
         ret = [0 for _ in range(self.player_count)]
         for card in card_history:
-            if card[1] == self.player_name and (card[0].card_type == CardType.WILD or card[0].card_type == CardType.DRAW_FOUR):
+            if card[1] == self.player_name and card[0].card_type == CardType.WILD:
                 cc = self.color_count(self.hand)
                 optimal_color = max(cc, key=cc.get)
                 if card[0].card_color != optimal_color:
-                    ret[self.players.index(card[1])] -= 1
+                    ret[self.players.index(card[1])] -= 2
+                else:
+                    ret[self.players.index(card[1])] -= 1    
+        return ret
+
+    def l_wrongdrawfour(self, card_history):
+        ret = [0 for _ in range(self.player_count)]
+        for card in card_history:
+            if card[1] == self.player_name and card[0].card_type == CardType.DRAW_FOUR:
+                cc = self.color_count(self.hand)
+                optimal_color = max(cc, key=cc.get)
+                if card[0].card_color != optimal_color:
+                    ret[self.players.index(card[1])] -= 4
+                else:
+                    ret[self.players.index(card[1])] -= 3    
         return ret
 
     def color_count(self, hand):

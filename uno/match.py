@@ -61,8 +61,8 @@ class Match:
 
     # Checks if the deck needs reshuffling given the number of cards about to be drawn,
     #  and do so.
-    def reshuffle_cards(self, cards=1):
-        if cards >= len(self.deck):
+    def reshuffle_cards(self, num_cards=1):
+        if num_cards >= len(self.deck):
             self.deck.recycle_from_pile(self.discard_pile)
 
     # The main loop of the game.
@@ -98,7 +98,8 @@ class Match:
                 if self.verbose:
                     input(f"Player {current_player} has won!\n<Press ENTER to close>)")
                 else:
-                    print(f"Player {current_player} has won!")
+                    #print(f"Player {current_player} has won!")
+                    pass
                 return current_player
 
     # Play the given card.
@@ -129,8 +130,8 @@ class Match:
             self.players.append(player)
 
         # Check if the card is valid, and play if it is.
-        if card != self.discard_pile.top and card.card_type != CardType.WILD and card.card_type != CardType.DRAW_FOUR:
-            raise ValueError("Player played card that does not match the top card!")
+        if not card.same(self.discard_pile.top) and card.card_type != CardType.WILD and card.card_type != CardType.DRAW_FOUR:
+            raise ValueError(f"Player played card that does not match the top card! selected:{card} top:{self.discard_pile.top}")
         self.discard_pile.add_card(card)
 
     # Skips the next player in the queue.
@@ -174,7 +175,7 @@ class Match:
         drawing_player = self.players.popleft()
 
         # Give the current player two cards.
-        self.reshuffle_cards(cards=2)
+        self.reshuffle_cards(num_cards=2)
         drawing_player.give_card(self.deck.draw(2))  
 
         # Tell all players about the cards drawn.
@@ -200,7 +201,7 @@ class Match:
             # Check if the challenge is successful.
             challenge_success = False
             for c in player.hand:
-                if c == self.discard_pile.top and c.card_type != CardType.DRAW_FOUR:
+                if c.same(self.discard_pile.top) and c.card_type != CardType.DRAW_FOUR:
                     challenge_success = True
                     break
             
@@ -209,7 +210,7 @@ class Match:
             if challenge_success:
                 
                 # Give the player four cards.
-                self.reshuffle_cards(cards=4)
+                self.reshuffle_cards(num_cards=4)
                 player.give_card(self.deck.draw(4))
 
                 # Tell all non-involved players about the challenge results.
@@ -234,7 +235,7 @@ class Match:
                        f"Player {drawing_player} has drawn six cards, and has been skipped.")
                 
                 # Give the drawing player six cards.
-                self.reshuffle_cards(cards=6)
+                self.reshuffle_cards(num_cards=6)
                 drawing_player.give_card(self.deck.draw(6))  
 
                 # Tell the drawing player about the challenge results.
@@ -251,7 +252,7 @@ class Match:
         else:
 
             # Give the drawing player 4 cards, and make sure they are skipped.
-            self.reshuffle_cards(cards=4)
+            self.reshuffle_cards(num_cards=4)
             drawing_player.give_card(self.deck.draw(4))     
 
             # Tell all players about the card played.

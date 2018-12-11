@@ -18,7 +18,7 @@ class MinimaxPlayer(Player):
     # Select a card by generating a decision tree, and selecting a card based on heuristic functions etc.
     def perform_move(self, top_card):
         chosen_card =  self.algo.get_card(deepcopy(self.hand), deepcopy(top_card), self.current_deck_total, self.current_player_order, self.previous_player)
-        #print(f"chosen_card: {chosen_card}")
+        #print(f"chosen_card: {chosen_card} against top card: {top_card}")
         #print("out of..")
         #[print(f"  {x}") for x in self.hand]
         if chosen_card is None:
@@ -29,19 +29,24 @@ class MinimaxPlayer(Player):
                 self.hand[i].card_color = chosen_card.card_color
                 selected_card = self.hand.pop(i)
                 return selected_card
-            elif self.hand[i].card_type == chosen_card.card_type and self.hand[i].card_color == chosen_card.card_color:
+            elif self.hand[i] == chosen_card:
                 selected_card = self.hand.pop(i)
                 return selected_card
+
     # Handle the card given by adding it to relevant structures keeping track of cards played.
     def notify(self, card, top_card, player, deck_total, msg=None):
         if card:
             self.algo.cards_played += [deepcopy(card)]
             self.previous_player = player.name
+            if card in self.algo.mystery_hands[player.name]:
+                self.algo.mystery_hands[player.name].remove(card)
+            elif None in self.algo.mystery_hands[player.name]:
+                self.algo.mystery_hands[player.name].remove(None)
         self.current_deck_total = deck_total
     
     # Make a decision about whether to play a drawn card or not.
     def request_draw(self, card, top_card):
-        if card != top_card:
+        if not card.same(top_card):
             return False
         else:
             if card.card_type == CardType.WILD or card.card_type == CardType.DRAW_FOUR:
@@ -55,7 +60,7 @@ class MinimaxPlayer(Player):
 
     # Handle the cards given by adding it to relevant structures keeping track of cards.
     def challenged_hand(self, player, cards):
-        pass
+        self.algo.mystery_hands[player.name] = cards
 
     # Don't actually care about sent messages, do nothing.
     def send_msg(self, msg):

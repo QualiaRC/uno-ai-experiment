@@ -14,7 +14,8 @@ class RandomPlayer(Player):
     def perform_move(self, top_card):
 
         # Get a random valid card from the hand.
-        valid_cards = [x for x in self.hand if x == top_card]
+        valid_cards = [x for x in self.hand if x.same(top_card)]
+
         if valid_cards == []:  # Return None if no cards can be played.
             return None
         card = random.choice(valid_cards)
@@ -27,7 +28,7 @@ class RandomPlayer(Player):
 
         # Remove the card, and return it.
         for i in range(len(self.hand)):
-            if card.card_type == self.hand[i].card_type and card.card_color == self.hand[i].card_color:
+            if card == self.hand[i]:
                 return self.hand.pop(i)
         return card
 
@@ -37,7 +38,7 @@ class RandomPlayer(Player):
     
     # Always play the card drawn if the AI can play it.
     def request_draw(self, card, top_card):
-        if card != top_card:
+        if not card.same(top_card):
             return False
         else:
             if card.card_type == CardType.WILD or card.card_type == CardType.DRAW_FOUR:
@@ -49,6 +50,7 @@ class RandomPlayer(Player):
     # 50/50 chance for challenging a DRAW FOUR card.
     def request_challenge(self, player):
         return random.randint(1, 100) % 2 == 0
+        
 
     # Don't actually care about the shown hand, do nothing.
     def challenged_hand(self, player, cards):

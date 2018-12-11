@@ -52,6 +52,20 @@ class Card:
     # Cards are considered equal if their color or type matches.
     # In this case, DRAW_FOUR and WILD are the same card.
     def __eq__(self, other):
+        if other is None:
+            return False
+        return self.card_color == other.card_color and self.card_type == other.card_type
+
+    def __str__(self):
+        if self.card_color == CardColor.WILD and self.card_type != CardType.DRAW_FOUR:
+            return f"[ {self.card_type} ]"
+        else:
+            return f"[ {self.card_color} {self.card_type} ]"
+
+    def same(self, other):
+
+        if other is None:
+            return False
 
         # Splitting up the conditionals for readability.
         # Checking for regular equalities.
@@ -60,11 +74,3 @@ class Card:
         wild_match = self.card_color == CardColor.WILD or other.card_color == CardColor.WILD
 
         return color_match or type_match or wild_match
-
-    def __str__(self):
-        if (self.card_color == CardColor.WILD and self.card_type != CardType.DRAW_FOUR):
-            return f"[ {self.card_type} ]"
-        else:
-            return f"[ {self.card_color} {self.card_type} ]"
-
-    
