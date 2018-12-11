@@ -62,7 +62,7 @@ class Minimax:
         if len(self.cards_played) == 0:
             self.cards_played += [deepcopy(topcard)]
         self.hand = hand
-        tree = self.generate_tree([(topcard, previous_player)], deck_total, players, self.mystery_hands)
+        tree = self.generate_tree([(topcard, previous_player)], deck_total, players)
 
 
         states = [x[0].value for x in tree.children]
@@ -104,7 +104,7 @@ class Minimax:
         # If there is only one optimal choice, this just returns the single choice.
         return states[choice(minmaxes)]
 
-    def generate_tree(self, parent_cards, deck_total, players, mystery_hands, depth=None):
+    def generate_tree(self, parent_cards, deck_total, players, depth=None):
         depth_limit = self.number_of_players
 
         # If no depth is passed, start generating the tree at node 0.
@@ -162,55 +162,21 @@ class Minimax:
             # TODO: CHECK IF THE DECK IS SHUFFLED AFTER THE CARD IS PLAYED, ONCE BEFORE AND AFTER THE DRAW CONDITIONAL
             # Create a new list of players, with the order reflecting the next turn based off of the card being played.
 
-            mystery_hands_copy = deepcopy(mystery_hands)
-
             # TODO: UPDATE THE DECK_TOTAL
             new_deck_total = deck_total
             
             new_list = copy(players)
-            if card[0].card_type == CardType.SKIP:
+            if card[0].card_type == CardType.SKIP or card[0].card_type == CardType.DRAW_TWO or card[0].card_type == CardType.DRAW_FOUR:
                 new_list.append(new_list.pop(0))
-                new_list.append(new_list.pop(0))
-            elif card[0].card_type == CardType.DRAW_TWO:
-                new_list.append(new_list.pop(0))
-                mystery_hands_copy[new_list[0]] += [None for _ in range(2)]
-                new_list.append(new_list.pop(0))
-            elif card[0].card_type == CardType.DRAW_FOUR:
-                new_list.append(new_list.pop(0))
-                mystery_hands_copy[new_list[0]] += [None for _ in range(4)]
                 new_list.append(new_list.pop(0))
             elif card[0].card_type == CardType.REVERSE:
                 new_list.reverse()
             else:
                 new_list.append(new_list.pop(0))
 
-            # If we know the player has a card in their hand that matches 
-            #  this node, we remove it from that list. If we don't know if 
-            #  it's in their hand, remove a 'mystery' card
-            removed = False
-            #print("===DEPTH " + str(current_node.depth) + "===")
-            #print("<BEE-4> MYSTERY HAND FROM PLAYER: " + current_node.player_name)
-            #print(f'{mystery_hands_copy[current_node.player_name]}')
-
-            for i in range(len(mystery_hands_copy[current_node.player_name])):
-                if (not mystery_hands_copy[current_node.player_name][i] is None and 
-                current_node.card.same(mystery_hands_copy[current_node.player_name][i])):
-                    mystery_hands_copy[current_node.player_name].pop(i)
-                    removed = True
-                    break
-            if not removed:
-                for i in range(len(mystery_hands_copy[current_node.player_name])):
-                    if mystery_hands_copy[current_node.player_name][i] is None:
-                        mystery_hands_copy[current_node.player_name].pop(i)
-                        break
-                    
-            #print("<AFTER> MYSTERY HAND FROM PLAYER: " + current_node.player_name)
-            #print(f'{mystery_hands_copy[current_node.player_name]}')
-            #print()
-            #print()            
 
             # Get the weight of the branch being created.
-            new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name, mystery_hands_copy)]) # deepcopy?
+            new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name)]) # deepcopy?
             
             # Remove the card from the hand if it is the player's turn
             if current_node.player_name == self.player_name:
@@ -220,7 +186,7 @@ class Minimax:
                         break
             weight = card[1]
 
-            current_node.children += [(self.generate_tree(new_parent_cards, new_deck_total, new_list, mystery_hands_copy,depth=new_depth), weight)]
+            current_node.children += [(self.generate_tree(new_parent_cards, new_deck_total, new_list,depth=new_depth), weight)]
 
         # Return the working node after generating children.
         states = []
