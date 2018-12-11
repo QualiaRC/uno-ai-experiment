@@ -35,6 +35,10 @@ class MinimaxPlayer(Player):
 
     # Handle the card given by adding it to relevant structures keeping track of cards played.
     def notify(self, card, top_card, player, deck_total, msg=None):
+
+        if deck_total > self.current_deck_total:
+            self.algo.cards_played = [deepcopy(top_card)]
+
         if card:
             self.algo.cards_played += [deepcopy(card)]
             self.previous_player = player.name

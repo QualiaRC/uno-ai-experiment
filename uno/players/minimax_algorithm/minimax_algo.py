@@ -7,6 +7,8 @@ from copy import copy
 from copy import deepcopy
 from random import choice
 from random import randint
+from random import shuffle
+from sys import maxsize
 
 class Node:
 
@@ -86,30 +88,41 @@ class Minimax:
 
     def minimum_maximum(self, player_name, states):
 
-        # If there are no states, return None, as no state can be selected.
         if not states:
             return None
         
-        # Get the index matching the player to the states.
         index = self.players.index(player_name)
 
-        # Make a copy of the states, and create a formatted states list for parsing.
-        states_copy = deepcopy(states)
-        formatted_states = [[x.pop(index), max(x)] for x in states_copy]
+        # Get maximum for current player.
+        player_max = -maxsize + 1
+        for state in states:
+            if state[index] > player_max:
+                player_max = state[index]
+
+        # For states where the current player is maxed out, get the minimum maximum of the opponents.
+        min = maxsize
+        for state in states:
+            if state[index] == player_max:
+                max = -maxsize - 1
+                for i in range(len(state)):
+                    if i != index and state[i] > max:
+                        max = state[i]
+                if max < min:
+                    min = max
+
+        # Pick one and return it.
+        shuffle(states)
+        for state in states:
+            if state[index] == player_max:
+                max = -maxsize - 1
+                for i in range(len(state)):
+                    if i != index and state[i] > max:
+                        max = state[i]
+                if max == min:
+                    return state
         
-        # Find the maximum value for the player, and the minimum maximum values of the other players.
-        max_value = max([x[0] for x in formatted_states])
-        min_value = min([x[1] for x in formatted_states if x[0] == max_value])
+        raise(RuntimeError("Mininum maximum reached end of function without result!"))
 
-        # Get all optimal choices for the player.
-        minmaxes = []
-        for i in range(len(formatted_states)):
-            if formatted_states[i][0] == max_value and formatted_states[i][1] == min_value:
-                minmaxes.append(i)
-
-        # Return an optimal choice at random.
-        # If there is only one optimal choice, this just returns the single choice.
-        return states[choice(minmaxes)]
 
     def generate_tree(self, parent_cards, deck_total, players, depth=None):
         depth_limit = self.number_of_players
@@ -120,7 +133,7 @@ class Minimax:
         # Create the node for the current level.
         current_node = Node(depth, parent_cards[len(parent_cards)-1][0], players[0])
         # If we have hit depth limit or we encounter the AI player again, return the node.
-        if depth == depth_limit or (current_node.player_name == self.player_name and depth != 0):
+        if depth == depth_limit or (current_node.player_name == self.player_name and depth != 0) or deck_total < 1:
             self.apply_heuristics(current_node, parent_cards)
             return current_node
 
@@ -138,6 +151,20 @@ class Minimax:
                     playable_cards += [[card, 1]]
         else:
             playable_cards = self.possible_cards
+
+        # Remove parent cards
+        for card in parent_cards:
+            if card[0].card_type == CardType.WILD or card[0].card_type == CardType.DRAW_FOUR:
+                for card2 in playable_cards:
+                    if card2[0].card_type == card[0].card_type:
+                        playable_cards.remove(card2)
+                        break
+            else:
+                for card2 in playable_cards:
+                    if card2[0] == card[0]:
+                        playable_cards.remove(card2)
+
+        # Removing cards in card history
 
         playable_cards = [x for x in playable_cards if x[0].same(current_node.card)]
         new_wilds = []
@@ -185,14 +212,6 @@ class Minimax:
                 new_list.reverse()
             else:
                 new_list.append(new_list.pop(0))
-
-            # Deck has been depleted, calculate the new depth total.
-            if new_deck_total < 0:
-                cards_in_play = 0
-                for player in self.mystery_hands:
-                    cards_in_play += len(self.mystery_hands[player])
-                # all cards - cards in each players hand - top card of discard
-                new_deck_total = 108 - cards_in_play - 1
 
             # Get the weight of the branch being created.
             new_parent_cards = (copy(parent_cards) + [(card[0], current_node.player_name)]) # deepcopy?
