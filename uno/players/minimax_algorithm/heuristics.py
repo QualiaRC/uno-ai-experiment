@@ -1,14 +1,17 @@
 from uno.game_components.card import *
 
+from copy import copy
+
 class Heuristics:
     
     def __init__(self, player_name, players, functions):
         self.player_name = player_name
         self.players = players
         self.player_count = len(self.players)
+        self.current_player_order = None
         self.hand = None
         self.cards_played = None
-        self.mystery_hands = None
+        self.mystery_hands = {}
         self.card_history = None
         self.applied_functions = functions
         self.functions = { 
@@ -16,21 +19,47 @@ class Heuristics:
             "SkipPriority": self.l_skip, 
             "DiscardPriority": self.l_hasdiscarded,
             "WildDelay": self.l_wrongwild,
-            "Draw4Delay": self.l_wrongdrawfour
+            "Draw4Delay": self.l_wrongdrawfour,
+            "AttackLow": self.l_attacklow
         }        
 
     #Card history is list [asdfa]
-    def update(self, hand, card_history):
-        self.hand = hand
+    def update(self, card_history):
         self.card_history = card_history
 
     def get_value(self):
         ret = [0 for _ in range(self.player_count)]
 
-        for function in self.functions:
+        for function in self.applied_functions:
             values = self.functions[function](self.card_history)
             for i in range(len(ret)):
                 ret[i] += values[i]
+
+        return ret
+
+    def l_attacklow(self, card_history):
+        
+        # Get initial hand counts.
+        ret = [0 for _ in range(self.player_count)]
+        for i in range(len(self.players)):
+            ret[i] += len(self.mystery_hands[self.players[i]])
+
+        # Get hand counts after the round is over.
+        player_order = copy(self.current_player_order)
+        for card in card_history:
+            if card[1] == None:
+                continue
+            if card[0].card_type == CardType.SKIP or card[0].card_type == CardType.DRAW_TWO or card[0].card_type == CardType.DRAW_FOUR:
+                player_order.append(player_order.pop(0))
+                if len(self.mystery_hands[player_order[0]]) < 7:
+                    for player in self.players:
+                        if player != player_order[0]:
+                            ret[self.players.index(player)] += (7 - len(self.mystery_hands[player_order[0]]))
+                player_order.append(player_order.pop(0))
+            elif card[0].card_type == CardType.REVERSE:
+                player_order.reverse()
+            else:
+                player_order.append(player_order.pop(0))
 
         return ret
 

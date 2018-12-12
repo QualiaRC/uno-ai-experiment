@@ -43,7 +43,7 @@ class Player:
     #      that opponent draws four instead of the player, and the player is not skipped.
     #    - Otherwise, the player draws six instead of four.
     # Returns True or False, depending on whether the player wants to issue the challenge.
-    def request_challenge(self, player):
+    def request_challenge(self, player, top_card):
         raise NotImplementedError
 
     # Called by Match when a challenge is issued, showing the cards of the challenged player.

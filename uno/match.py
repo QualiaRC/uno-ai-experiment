@@ -191,7 +191,7 @@ class Match:
         drawing_player = self.players.popleft()
         
         # Ask if the drawing player wants to challenge the Draw Four card.
-        is_challenging = drawing_player.request_challenge(player)
+        is_challenging = drawing_player.request_challenge(player, top_card)
 
         if is_challenging:
             

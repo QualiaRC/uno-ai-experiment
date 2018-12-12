@@ -1,6 +1,7 @@
 from uno.players.player import Player
 from uno.players.minimax_algorithm.minimax_algo import Minimax
 from uno.game_components.card import *
+from uno.game_components.deck import Deck
 
 from copy import deepcopy
 import random
@@ -59,8 +60,34 @@ class MinimaxPlayer(Player):
             return True
 
     # Make a decision about whether to challenge a Draw Four, based on the odds of the player bluffing.
-    def request_challenge(self, player):
-        return (random.randint(1,2) == 1)
+    def request_challenge(self, player, top_card):
+        # Get the cards that have been played so far.
+        cards_played = self.algo.cards_played
+        
+        # Check if we know anything about the player's hand, and challenge them if they potentially have a card they shouldn't have.
+        for card in self.algo.mystery_hands[player.name]:
+            if not (card is None) and card.same(top_card) and card.card_type != CardType.DRAW_FOUR:
+                return True
+        
+        # Calculate the odds of the player having a card matching the top card.
+        all_matches = 0
+        all_cards = Deck()
+        for card in all_cards:
+            if card.same(top_card):
+                all_matches += 1
+        
+        # Count the number of cards that can be matches that have already been played.
+        matches_depleted = 0
+        for card in cards_played:
+            if card.card_type == CardType.WILD or card.card_type == CardType.DRAW_FOUR:
+                matches_depleted += 1
+            elif card.same(top_card):
+                matches_depleted += 1
+
+        # Make a chance table that represents the probability that the challenger has another playable card, and return it.
+
+        table = [False for _ in range(matches_depleted)] + [True for _ in range(all_matches - matches_depleted)]
+        return random.choice(table)
 
     # Handle the cards given by adding it to relevant structures keeping track of cards.
     def challenged_hand(self, player, cards):

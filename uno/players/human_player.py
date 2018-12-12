@@ -20,7 +20,7 @@ class HumanPlayer(Player):
         ptr = 0
         for card in self.hand:
             ptr += 1
-            if card == top_card:
+            if card.same(top_card):
                 print(f"\t>{ptr}. {card}")
             else:
                 print(f"\t{ptr}. {card}")
@@ -55,7 +55,7 @@ class HumanPlayer(Player):
             # Get a number from the player.
             # If there is no play to be made, or the player does not want to play, return None.
             q = input(f"Select a card to play. (1 to {len(self.hand)}) ('skip' to not play a card):  ")
-            if [x for x in self.hand if x == top_card] == [] or q == "skip":
+            if [x for x in self.hand if x.same(top_card)] == [] or q == "skip":
                 return None
 
             # Attempt to convert the input into an integer.
@@ -72,7 +72,7 @@ class HumanPlayer(Player):
                 continue
 
             # Check if card is a valid card to play.
-            if self.hand[value-1] != top_card:
+            if not self.hand[value-1].same(top_card):
                 print("Card does not match the top card!")
                 continue
 
@@ -109,7 +109,7 @@ class HumanPlayer(Player):
     def request_draw(self, card, top_card):
         
         print(f"  You have drawn the {card} card.")
-        if card != top_card:  # Card is unplayable.
+        if not card.same(top_card):  # Card is unplayable.
             print()
             print()
             return False
@@ -125,7 +125,7 @@ class HumanPlayer(Player):
             return self.select_wild_color(card)
         return True
 
-    def request_challenge(self, player):
+    def request_challenge(self, player, top_card):
         print(f"  Player {player} has played a Draw Four card on you.")
         q = input("  Challenge the card? (y/n)")
         return q.lower() == "y"

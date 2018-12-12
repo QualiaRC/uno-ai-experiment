@@ -48,7 +48,7 @@ class RandomPlayer(Player):
             return True
 
     # 50/50 chance for challenging a DRAW FOUR card.
-    def request_challenge(self, player):
+    def request_challenge(self, player, top_card):
         return random.randint(1, 100) % 2 == 0
         
 

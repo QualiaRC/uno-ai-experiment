@@ -14,6 +14,7 @@ SkipPriority:  Value Skip cards highly
 DiscardPriority:  Value discarding a card highly
 WildDelay:  Deprioritize Wild cards
 Draw4Delay:  Deprioritize Draw 4 cards
+AttackLow:  Benefit all players if a player with low cards has been skipped or card drawn.
 """
 
 def run_tests(num_players, num_runs):
@@ -22,7 +23,8 @@ def run_tests(num_players, num_runs):
         "SkipPriority",
         "DiscardPriority",
         "WildDelay",
-        "Draw4Delay"
+        "Draw4Delay",
+        "AttackLow"
     ]
     
     player_names = ["VARIABLE_MINIMAX"]

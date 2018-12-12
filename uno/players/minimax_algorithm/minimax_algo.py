@@ -71,6 +71,7 @@ class Minimax:
         self.heuristics.hand = deepcopy(self.hand)
         self.heuristics.mystery_hands = deepcopy(self.mystery_hands)
         self.heuristics.cards_played = deepcopy(self.cards_played)
+        self.heuristics.current_player_order = deepcopy(players)
 
         tree = self.generate_tree([(topcard, previous_player)], deck_total, players)
 
@@ -83,7 +84,7 @@ class Minimax:
         return None
 
     def apply_heuristics(self, node, parent_cards):
-        self.heuristics.update(self.hand, parent_cards)
+        self.heuristics.update(parent_cards)
         node.value = self.heuristics.get_value()
 
     def minimum_maximum(self, player_name, states):
