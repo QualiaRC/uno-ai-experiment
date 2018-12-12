@@ -2,7 +2,7 @@ from uno.game_components.card import *
 
 class Heuristics:
     
-    def __init__(self, player_name, players):
+    def __init__(self, player_name, players, functions):
         self.player_name = player_name
         self.players = players
         self.player_count = len(self.players)
@@ -10,13 +10,14 @@ class Heuristics:
         self.cards_played = None
         self.mystery_hands = None
         self.card_history = None
-        self.functions = [ 
-            self.l_drawtwo, 
-            self.l_skip, 
-            self.l_hasdiscarded,
-            self.l_wrongwild,
-            self.l_wrongdrawfour
-        ]
+        self.applied_functions = functions
+        self.functions = { 
+            "Draw2Priority": self.l_drawtwo, 
+            "SkipPriority": self.l_skip, 
+            "DiscardPriority": self.l_hasdiscarded,
+            "WildDelay": self.l_wrongwild,
+            "Draw4Delay": self.l_wrongdrawfour
+        }        
 
     #Card history is list [asdfa]
     def update(self, hand, card_history):
@@ -26,8 +27,8 @@ class Heuristics:
     def get_value(self):
         ret = [0 for _ in range(self.player_count)]
 
-        for f in self.functions:
-            values = f(self.card_history)
+        for function in self.functions:
+            values = self.functions[function](self.card_history)
             for i in range(len(ret)):
                 ret[i] += values[i]
 

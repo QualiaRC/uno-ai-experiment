@@ -24,14 +24,14 @@ class Node:
 
 class Minimax:
 
-    def __init__(self, player_name, players):
+    def __init__(self, player_name, players, functions):
         self.all_cards = Deck()
         self.cards_played = list()
         self.players = players
         self.number_of_players = len(self.players)
         self.player_name = player_name
         self.hand = None
-        self.heuristics = Heuristics(self.player_name, self.players)
+        self.heuristics = Heuristics(self.player_name, self.players, functions)
         self.mystery_hands = dict()
         for player in players:
             self.mystery_hands[player] = [None for _ in range(7)]

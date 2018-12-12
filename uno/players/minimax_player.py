@@ -7,10 +7,10 @@ import random
 
 class MinimaxPlayer(Player):
 
-    def __init__(self, name, players):
+    def __init__(self, name, players, functions):
         super().__init__(name)
         self.name = name
-        self.algo = Minimax(self.name, players)
+        self.algo = Minimax(self.name, players, functions)
         self.current_deck_total = 100
         self.current_player_order = None
         self.previous_player = None
