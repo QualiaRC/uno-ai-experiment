@@ -28,12 +28,13 @@ def run_tests(num_players, num_runs):
     ]
     
     player_names = ["VARIABLE_MINIMAX"]
-    player_names += [f"BEST_MINIMAX_{x+1}" for x in range(num_players - 1)]
+    player_names += [f"RANDOM_{x+1}" for x in range(num_players - 1)]
     
     function_runs = function_combinations(functions)
     current_best_heuristics = function_runs[0]
 
     t0 = time()
+    best_rate = 0
     for function_set in function_runs:
 
         print("\n" + ("=" * 80))
@@ -46,7 +47,7 @@ def run_tests(num_players, num_runs):
 
         # Set up best players
         for i in range(num_players - 1):
-            player_list += [MinimaxPlayer(player_names[i + 1], player_names, current_best_heuristics)]
+            player_list += [RandomPlayer(player_names[i + 1])]
 
         # Set up win counter
         wincount = dict()
@@ -64,12 +65,8 @@ def run_tests(num_players, num_runs):
         print(f" Minimax's win-rate: {round(wincount['VARIABLE_MINIMAX'] / num_runs * 100, 2)}%")
         print(f" Time taken: {round(time() - t, 3)} seconds")
 
-        new_best = False
-        for i in range(num_players - 1):
-            if wincount["VARIABLE_MINIMAX"] > wincount[player_names[i + 1]]:
-                new_best = True
-
-        if new_best:
+        if wincount["VARIABLE_MINIMAX"] > best_rate:
+            best_rate = wincount["VARIABLE_MINIMAX"]
             print(f"\n .{('-' * 33)}.")
             print(" | ! New best function set found ! |")
             print(f" '{('-' * 33)}'")
