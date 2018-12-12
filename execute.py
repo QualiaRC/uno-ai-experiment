@@ -36,7 +36,6 @@ def run_tests(num_players, num_runs):
     t0 = time()
     best_rate = 0
     for function_set in function_runs:
-
         print("\n" + ("=" * 80))
         print("Starting new test with function set:")
         for function in function_set:
@@ -57,8 +56,12 @@ def run_tests(num_players, num_runs):
             for i in range(num_players - 1):
                 player_list += [RandomPlayer(player_names[i + 1])]
 
-            match = Match(deque(player_list), verbose=False)
-            wincount[match.winner.name] += 1
+            try:
+                match = Match(deque(player_list), verbose=False)
+                wincount[match.winner.name] += 1
+            except TypeError:
+                print("oops")
+                continue
 
         print("\nStatistics:")
         print(f" {wincount}")
