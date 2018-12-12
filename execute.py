@@ -4,9 +4,8 @@ from uno.players.minimax_player import MinimaxPlayer
 from uno.match import Match
 from time import time
 
-from uno.players.minimax_algorithm.minimax_algo import Minimax
-
 from collections import deque
+from itertools import combinations
 
 """
 FUNCTION NAMES:
@@ -17,39 +16,79 @@ WildDelay:  Deprioritize Wild cards
 Draw4Delay:  Deprioritize Draw 4 cards
 """
 
+def run_tests(num_players, num_runs):
+    functions = [
+        "Draw2Priority",
+        "SkipPriority",
+        "DiscardPriority",
+        "WildDelay",
+        "Draw4Delay"
+    ]
+    
+    player_names = ["VARIABLE_MINIMAX"]
+    player_names += [f"BEST_MINIMAX_{x+1}" for x in range(num_players - 1)]
+    
+    function_runs = function_combinations(functions)
+    current_best_heuristics = function_runs[0]
+
+    t0 = time()
+    for function_set in function_runs:
+
+        print("\n" + ("=" * 80))
+        print("Starting new test with function set:")
+        for function in function_set:
+            print(f" | {function}")
+        
+        # Variable player gets new function set
+        player_list = [MinimaxPlayer(player_names[0], player_names, function_set)]
+
+        # Set up best players
+        for i in range(num_players - 1):
+            player_list += [MinimaxPlayer(player_names[i + 1], player_names, current_best_heuristics)]
+
+        # Set up win counter
+        wincount = dict()
+        for player in player_names:
+            wincount[player] = 0
+
+        # Set up and start match
+        t = time()
+        for i in range(num_runs):
+            match = Match(deque(player_list), verbose=False)
+            wincount[match.winner.name] += 1
+
+        print("\nStatistics:")
+        print(f" {wincount}")
+        print(f" Minimax's win-rate: {round(wincount['VARIABLE_MINIMAX'] / num_runs * 100, 2)}%")
+        print(f" Time taken: {round(time() - t, 3)} seconds")
+
+        new_best = False
+        for i in range(num_players - 1):
+            if wincount["VARIABLE_MINIMAX"] > wincount[player_names[i + 1]]:
+                new_best = True
+
+        if new_best:
+            print(f"\n .{('-' * 33)}.")
+            print(" | ! New best function set found ! |")
+            print(f" '{('-' * 33)}'")
+            current_best_heuristics = function_set
+
+    # Congratulations on waiting a million years to get here!
+    print(("=" * 80))
+    print("DONE TESTING")
+    print(f"Total time taken: {round(time() - t0, 3)} seconds")
+    print(("=" * 80))
+
+
+# Get all combinations of a list without repeats
+#  e.g. [1, 2, 3] returns [[1],[2],[3],[1, 2],[1, 3],[2, 3],[1, 2, 3]]
+def function_combinations(functions):
+    function_runs = [[]]
+    for i in range(len(functions)):
+            for combination in combinations(functions, i + 1):
+                function_runs += [list(combination)]
+    return function_runs
+
 
 if __name__ == "__main__":
-    #player_list = [HumanPlayer("BEAN"), RandomPlayer("COM1"), RandomPlayer("COM2"), RandomPlayer("COM3")]
-    #player_list = [HumanPlayer("BEAN"), RandomPlayer("COM1")]
-    #player_list = [RandomPlayer("RANDOM"), MinimaxPlayer("MINIMAX", ["RANDOM", "MINIMAX"])]
-    #player_list = [MinimaxPlayer("GREEN BEAN", ["GREEN BEAN", "COFFEE BEAN"]), MinimaxPlayer("COFFEE BEAN", ["GREEN BEAN", "COFFEE BEAN"])]
-    #player_list = [HumanPlayer("BEAN"), MinimaxPlayer("MinimaxCOM1", ["BEAN", "MinimaxCOM1"])]
-    #player_list = [RandomPlayer("R1"), RandomPlayer("R2")]
-    #Match(deque(player_list))
-
-    #wincount = {"RANDOM1": 0, "MINIMAX": 0, "RANDOM2": 0, "RANDOM3": 0, "RANDOM4": 0, "RANDOM5": 0}    
-    #wincount = {"RANDOM1": 0, "MINIMAX": 0, "RANDOM2": 0, "RANDOM3": 0}
-    #wincount = {"RANDOM1": 0, "MINIMAX": 0, "RANDOM2": 0}
-    wincount = {"RANDOM": 0, "MINIMAX": 0}
-    
-    fn = ["Draw2Priority", "SkipPriority", "DiscardPriority", "WildDelay", "Draw4Delay"]
-
-    t = time()
-    round_count = 1000
-    for i in range(round_count):
-        #player_list = [RandomPlayer("RANDOM1"), RandomPlayer("RANDOM2"), RandomPlayer("RANDOM3"), MinimaxPlayer("MINIMAX", ["RANDOM1", "RANDOM2", "RANDOM3", "RANDOM4", "RANDOM5", "MINIMAX"])]
-        #player_list = [RandomPlayer("RANDOM1"), RandomPlayer("RANDOM2"), RandomPlayer("RANDOM3"), MinimaxPlayer("MINIMAX", ["RANDOM1", "RANDOM2", "RANDOM3", "MINIMAX"])]
-        #player_list = [RandomPlayer("RANDOM1"), RandomPlayer("RANDOM2"), MinimaxPlayer("MINIMAX", ["RANDOM1", "RANDOM2", "MINIMAX"])]
-        player_list = [RandomPlayer("RANDOM"), MinimaxPlayer("MINIMAX", ["RANDOM", "MINIMAX"], fn)]
-        m = Match(deque(player_list), verbose=False)
-        wincount[m.winner.name] += 1
-
-    print(wincount)
-    print(f"Minimax's win-rate: {round(wincount['MINIMAX'] / round_count * 100, 2)}%")
-    print()
-    print(f"Time taken: {round(time() - t, 3)} seconds")
-
-    
-#    for _ in range(1000):
-#        player_list = [ MinimaxPlayer("MINIMAX1", ["MINIMAX1", "MINIMAX2"]), MinimaxPlayer("MINIMAX2", ["MINIMAX1", "MINIMAX2"])]
-#        Match(deque(player_list), verbose=False)
+    run_tests(2, 100)
