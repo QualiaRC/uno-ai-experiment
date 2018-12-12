@@ -42,13 +42,6 @@ def run_tests(num_players, num_runs):
         for function in function_set:
             print(f" | {function}")
         
-        # Variable player gets new function set
-        player_list = [MinimaxPlayer(player_names[0], player_names, function_set)]
-
-        # Set up best players
-        for i in range(num_players - 1):
-            player_list += [RandomPlayer(player_names[i + 1])]
-
         # Set up win counter
         wincount = dict()
         for player in player_names:
@@ -57,6 +50,13 @@ def run_tests(num_players, num_runs):
         # Set up and start match
         t = time()
         for i in range(num_runs):
+            # Variable player gets new function set
+            player_list = [MinimaxPlayer(player_names[0], player_names, function_set)]
+
+            # Set up other players
+            for i in range(num_players - 1):
+                player_list += [RandomPlayer(player_names[i + 1])]
+
             match = Match(deque(player_list), verbose=False)
             wincount[match.winner.name] += 1
 
@@ -90,4 +90,4 @@ def function_combinations(functions):
 
 
 if __name__ == "__main__":
-    run_tests(2, 100)
+    run_tests(2, 1000)
