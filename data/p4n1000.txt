@@ -1,0 +1,19 @@
+================================================================================
+Starting new test with function set:
+ | Draw2Priority
+ | SkipPriority
+ | WildDelay
+ | Draw4Delay
+
+Statistics:
+ {'VARIABLE_MINIMAX': 315, 'RANDOM_1': 229, 'RANDOM_2': 234, 'RANDOM_3': 215}
+ Minimax's win-rate: 31.5%
+ Time taken: 4229.449 seconds
+
+ .---------------------------------.
+ | ! New best function set found ! |
+ '---------------------------------'
+================================================================================
+DONE TESTING
+Total time taken: 4229.449 seconds
+================================================================================
