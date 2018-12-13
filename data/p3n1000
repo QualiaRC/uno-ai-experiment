@@ -1,0 +1,65 @@
+================================================================================
+Starting new test with function set:
+ | Draw2Priority
+ | SkipPriority
+ | WildDelay
+ | Draw4Delay
+
+Statistics:
+ {'VARIABLE_MINIMAX': 442, 'RANDOM_1': 293, 'RANDOM_2': 265}
+ Minimax's win-rate: 44.2%
+ Time taken: 392.788 seconds
+
+ .---------------------------------.
+ | ! New best function set found ! |
+ '---------------------------------'
+
+================================================================================
+Starting new test with function set:
+ | Draw2Priority
+ | WildDelay
+ | Draw4Delay
+
+Statistics:
+ {'VARIABLE_MINIMAX': 436, 'RANDOM_1': 282, 'RANDOM_2': 282}
+ Minimax's win-rate: 43.6%
+ Time taken: 382.262 seconds
+
+================================================================================
+Starting new test with function set:
+ | Draw2Priority
+ | SkipPriority
+ | WildDelay
+ | Draw4Delay
+oops
+
+Statistics:
+ {'VARIABLE_MINIMAX': 413, 'RANDOM_1': 280, 'RANDOM_2': 306}
+ Minimax's win-rate: 41.3%
+ Time taken: 390.683 seconds
+
+================================================================================
+Starting new test with function set:
+ | SkipPriority
+ | WildDelay
+ | Draw4Delay
+oops
+
+Statistics:
+ {'VARIABLE_MINIMAX': 421, 'RANDOM_1': 271, 'RANDOM_2': 307}
+ Minimax's win-rate: 42.1%
+ Time taken: 372.466 seconds
+
+================================================================================
+Starting new test with function set:
+ | WildDelay
+ | Draw4Delay
+
+Statistics:
+ {'VARIABLE_MINIMAX': 406, 'RANDOM_1': 265, 'RANDOM_2': 329}
+ Minimax's win-rate: 40.6%
+ Time taken: 358.929 seconds
+================================================================================
+DONE TESTING
+Total time taken: 1897.128 seconds
+================================================================================
